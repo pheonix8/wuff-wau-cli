@@ -10,11 +10,12 @@ def find_dogs_by_name(name: str, year: str = ""):
     filtered_dogs = []
     for dog in all_dogs:
         if dog["HundenameText"] == name:
+            sex = 'm' if dog["SexHundSort"] == '1' else 'f'
             for i in range(int(dog["AnzHunde"])):
                 filtered_dogs.append((
                     dog["HundenameText"],
                     dog["GebDatHundJahr"],
-                    int(dog["SexHundSort"])
+                    sex
                 ))
     return filtered_dogs
 
@@ -39,14 +40,14 @@ def get_analytics(year: str = ""):
             row["HundenameText"] for row in all_dogs if len(row["HundenameText"]) == min_length
         ),
         "topTenCommonNames": {
-            "all_names": all_names_collection.most_common(10),
-            "all_names_m": m_names_collection.most_common(10),
-            "all_names_f": f_names_collection.most_common(10),
+            "allNames": all_names_collection.most_common(10),
+            "allNamesM": m_names_collection.most_common(10),
+            "allNamesF": f_names_collection.most_common(10),
         },
         "countOfDogs": {
-            "all_count": len([row for row in all_dogs]),
-            "m_count": len([row for row in all_dogs if row["SexHundSort"] == "1"]),
-            "f_count": len([row for row in all_dogs if row["SexHundSort"] == "2"]),
+            "allCount": len([row for row in all_dogs]),
+            "mCount": len([row for row in all_dogs if row["SexHundSort"] == "1"]),
+            "fCount": len([row for row in all_dogs if row["SexHundSort"] == "2"]),
 
         }
 
@@ -63,6 +64,6 @@ def create_dog(year: str = "", path: str = os.getcwd()):
     dog_image_path = f"{path}/{dog_name}_{dog_age}"
     generated_foto = data.get_random_dog(dog_image_path)
 
-    new_dog = dict(dogName=dog_name, dogAge=dog_age, dogSex=random.choice(["1", "2"]), dogImg=generated_foto)
+    new_dog = dict(dogName=dog_name, dogAge=dog_age, dogSex=random.choice(["m", "f"]), dogImg=generated_foto)
 
     return new_dog

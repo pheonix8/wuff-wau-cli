@@ -23,7 +23,6 @@ def get_random_dog(path: str):
     foto_url = response.json().get("url")
 
     while not foto_url.split(".")[-1].endswith(("jpg", "JPG", "jpeg", "JPEG")):
-        print(foto_url)
         response = requests.get(RANDOM_DOG_PICTURE)
         foto_url = response.json().get("url")
 
