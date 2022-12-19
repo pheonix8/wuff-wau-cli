@@ -104,7 +104,7 @@ def create(
     print("==============")
 
     print(f"Name: {new_dog['dogName']}")
-    print(f"Age: {new_dog['dogAge']}")
+    print(f"Birth year: {new_dog['dogBirth']}")
     print(f"Sex: {new_dog['dogSex']}")
     print(f"Image Path: {new_dog['dogImg']}")
 

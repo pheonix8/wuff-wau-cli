@@ -5,48 +5,41 @@ import data
 
 
 def find_dogs_by_name(name: str, year: str = ""):
-    all_dogs = data.get_dog_data(year)
-    filtered_dogs = []
-    for dog in all_dogs:
-        if dog["HundenameText"] == name:
-            sex = 'm' if dog["SexHundSort"] == '1' else 'f'
-            for i in range(int(dog["AnzHunde"])):
-                filtered_dogs.append((
-                    dog["HundenameText"],
-                    dog["GebDatHundJahr"],
-                    sex
-                ))
+    all_dogs = get_all_dogs(data.get_dog_data(year))
+
+    filtered_dogs = [dog for dog in all_dogs if dog[0] == name]
+
     return filtered_dogs
 
 
 def get_analytics(year: str = ""):
-    all_dogs = data.get_dog_data(year)
+    all_dogs = get_all_dogs(data.get_dog_data(year))
+
+    # Name lists
+    all_names = [dog[0] for dog in all_dogs]
+    m_names = [dog[0] for dog in all_dogs if dog[2] == "m"]
+    f_names = [dog[0] for dog in all_dogs if dog[2] == "f"]
 
     # Get the longest / shortest names
-    max_length = max([len(row["HundenameText"]) for row in all_dogs])
-    min_length = min([len(row["HundenameText"]) for row in all_dogs if row["HundenameText"] != "?"])
-
-    # stats
-    all_names_collection = collections.Counter([row["HundenameText"] for row in all_dogs])
-    m_names_collection = collections.Counter([row["HundenameText"] for row in all_dogs if row["SexHundSort"] == "1"])
-    f_names_collection = collections.Counter([row["HundenameText"] for row in all_dogs if row["SexHundSort"] == "2"])
+    max_length = max([len(dog) for dog in all_names])
+    min_length = min([len(dog) for dog in all_names if dog != "?"])
 
     analytics = {
         "longestNames": list(
-            row["HundenameText"] for row in all_dogs if len(row["HundenameText"]) == max_length
+            dog[0] for dog in all_dogs if len(dog[0]) == max_length
         ),
         "shortestNames": list(
-            row["HundenameText"] for row in all_dogs if len(row["HundenameText"]) == min_length
+            dog[0] for dog in all_dogs if len(dog[0]) == min_length
         ),
         "topTenCommonNames": {
-            "allNames": all_names_collection.most_common(10),
-            "allNamesM": m_names_collection.most_common(10),
-            "allNamesF": f_names_collection.most_common(10),
+            "allNames": collections.Counter(all_names).most_common(10),
+            "allNamesM": collections.Counter(m_names).most_common(10),
+            "allNamesF": collections.Counter(f_names).most_common(10),
         },
         "countOfDogs": {
-            "allCount": len([row for row in all_dogs]),
-            "mCount": len([row for row in all_dogs if row["SexHundSort"] == "1"]),
-            "fCount": len([row for row in all_dogs if row["SexHundSort"] == "2"]),
+            "allCount": len(all_names),
+            "mCount": len(m_names),
+            "fCount": len(f_names),
 
         }
 
@@ -56,13 +49,38 @@ def get_analytics(year: str = ""):
 
 
 def create_dog(path: str, year: str = ""):
-    all_dogs = data.get_dog_data(year)
+    all_dogs = get_all_dogs(data.get_dog_data(year))
 
-    dog_name = random.choice([row["HundenameText"] for row in all_dogs])
-    dog_age = random.choice([row["GebDatHundJahr"] for row in all_dogs])
-    dog_image_path = f"{path}/{dog_name}_{dog_age}"
+    dog_name = random.choice([dog[0] for dog in all_dogs])
+    dog_birth = random.choice([dog[1] for dog in all_dogs])
+    dog_image_path = f"{path}/{dog_name}_{dog_birth}"
     generated_foto = data.get_random_dog(dog_image_path)
 
-    new_dog = dict(dogName=dog_name, dogAge=dog_age, dogSex=random.choice(["m", "f"]), dogImg=generated_foto)
+    new_dog = dict(
+        dogName=dog_name,
+        dogBirth=dog_birth,
+        dogSex=random.choice(["m", "f"]),
+        dogImg=generated_foto
+    )
 
     return new_dog
+
+
+def get_all_dogs(dog_data: list):
+    all_dogs = []
+
+    for dog in dog_data:
+        if dog["SexHundSort"] == '1':
+            sex = 'm'
+        elif dog["SexHundSort"] == '2':
+            sex = 'f'
+        else:
+            sex = "?"
+        for i in range(int(dog["AnzHunde"])):
+            all_dogs.append((
+                dog["HundenameText"],
+                dog["GebDatHundJahr"],
+                sex
+            ))
+
+    return all_dogs
