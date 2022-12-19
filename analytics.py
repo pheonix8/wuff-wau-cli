@@ -1,5 +1,4 @@
 import collections
-import os
 import random
 
 import data
@@ -56,7 +55,7 @@ def get_analytics(year: str = ""):
     return analytics
 
 
-def create_dog(year: str = "", path: str = os.getcwd()):
+def create_dog(path: str, year: str = ""):
     all_dogs = data.get_dog_data(year)
 
     dog_name = random.choice([row["HundenameText"] for row in all_dogs])

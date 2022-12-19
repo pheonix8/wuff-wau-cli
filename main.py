@@ -1,13 +1,36 @@
+import os
+from typing import Optional
+
 import typer
 
 import analytics
 
 app = typer.Typer()
+state = {"year": ""}
+
+
+@app.callback()
+def main(
+    year: Optional[str] = typer.Option(
+        None,
+        "--year",
+        "-y",
+        help="Specify the deadline of the data, default is the current year.",
+    ),
+):
+    """
+    CLI app for the dog database of the city of Zurich.
+    """
+    if year is not None:
+        state["year"] = year
 
 
 @app.command()
 def find(name: str):
-    found_dogs = analytics.find_dogs_by_name(name)
+    """
+    Find all dogs with the given name and get their birth year and sex.
+    """
+    found_dogs = analytics.find_dogs_by_name(name, state["year"])
 
     print(f"Search for dogs by the name: {name}")
 
@@ -18,10 +41,20 @@ def find(name: str):
         print(f"{dog[0]} {dog[1]} {dog[2]}")
 
 
-
 @app.command()
 def stats():
-    statistics = analytics.get_analytics()
+    """
+    Show some stats about the dogs of Zurich.
+
+        - the longest names
+
+        - the shortest names
+
+        - the 10 most common names (male / female)
+
+        - the dog count (male / female)
+    """
+    statistics = analytics.get_analytics(state["year"])
 
     print("Generate statistics for the current year")
 
@@ -45,8 +78,26 @@ def stats():
 
 
 @app.command()
-def create():
-    new_dog = analytics.create_dog()
+def create(
+    output_dir: Optional[str] = typer.Option(
+        os.getcwd(),
+        "--output-dir",
+        "-o",
+        help="Specify the output path for the dog image.",
+    ),
+):
+    """
+    Create a new dog based on the data of the city.
+
+        - Random name
+
+        - Random birth year
+
+        - Random sex
+
+        - Random picture from: 'https://random.dog'
+    """
+    new_dog = analytics.create_dog(output_dir, state["year"])
 
     print("Create new dog:")
 
