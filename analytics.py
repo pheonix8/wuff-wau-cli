@@ -1,4 +1,5 @@
 import collections
+import os
 import random
 
 import data
@@ -52,3 +53,16 @@ def get_analytics(year: str = ""):
     }
 
     return analytics
+
+
+def create_dog(year: str = "", path: str = os.getcwd()):
+    all_dogs = data.get_dog_data(year)
+
+    dog_name = random.choice([row["HundenameText"] for row in all_dogs])
+    dog_age = random.choice([row["GebDatHundJahr"] for row in all_dogs])
+    dog_image_path = f"{path}/{dog_name}_{dog_age}"
+    generated_foto = data.get_random_dog(dog_image_path)
+
+    new_dog = dict(dogName=dog_name, dogAge=dog_age, dogSex=random.choice(["1", "2"]), dogImg=generated_foto)
+
+    return new_dog
