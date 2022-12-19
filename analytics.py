@@ -1,4 +1,5 @@
 import collections
+from pathlib import Path
 import random
 
 import data
@@ -48,13 +49,12 @@ def get_analytics(year: str = ""):
     return analytics
 
 
-def create_dog(path: str, year: str = ""):
+def create_dog(output_path: Path, year: str = ""):
     all_dogs = get_all_dogs(data.get_dog_data(year))
 
     dog_name = random.choice([dog[0] for dog in all_dogs])
     dog_birth = random.choice([dog[1] for dog in all_dogs])
-    dog_image_path = f"{path}/{dog_name}_{dog_birth}"
-    generated_foto = data.get_random_dog(dog_image_path)
+    generated_foto = data.get_random_dog(output_path, f"{dog_name}_{dog_birth}")
 
     new_dog = dict(
         dogName=dog_name,

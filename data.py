@@ -1,4 +1,5 @@
 import csv
+from pathlib import Path
 
 import requests
 
@@ -18,7 +19,7 @@ def get_dog_data(year: str = ""):
     return [row for row in output_list if row["StichtagDatJahr"] == year]
 
 
-def get_random_dog(path: str):
+def get_random_dog(output_path: Path, name: str):
     response = requests.get(RANDOM_DOG_PICTURE)
     foto_url = response.json().get("url")
 
@@ -27,12 +28,12 @@ def get_random_dog(path: str):
         foto_url = response.json().get("url")
 
     ext = foto_url.split(".")[-1]
-    path = f"{path}.{ext}"
+    output_path = output_path / f"{name}.{ext}"
 
     r = requests.get(foto_url, stream=True)
     if r.status_code == 200:
-        with open(path, 'wb') as f:
+        with open(output_path, 'wb') as f:
             for chunk in r.iter_content(1024):
                 f.write(chunk)
 
-    return path
+    return output_path

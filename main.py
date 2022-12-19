@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from typing import Optional
 
 import typer
@@ -80,7 +80,7 @@ def stats():
 @app.command()
 def create(
     output_dir: Optional[str] = typer.Option(
-        os.getcwd(),
+        Path.cwd(),
         "--output-dir",
         "-o",
         help="Specify the output path for the dog image.",
@@ -97,6 +97,8 @@ def create(
 
         - Random picture from: 'https://random.dog'
     """
+    if type(output_dir) == str:
+        output_dir = Path(output_dir)
     new_dog = analytics.create_dog(output_dir, state["year"])
 
     print("Create new dog:")
