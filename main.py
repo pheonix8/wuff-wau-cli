@@ -26,7 +26,7 @@ def main(
 
 
 @app.command()
-def find(name: str):
+def find(name: str) -> None:
     """
     Find all dogs with the given name and get their birth year and sex.
     """
@@ -42,7 +42,7 @@ def find(name: str):
 
 
 @app.command()
-def stats():
+def stats() -> None:
     """
     Show some stats about the dogs of Zurich.
 
@@ -85,7 +85,7 @@ def create(
         "-o",
         help="Specify the output path for the dog image.",
     ),
-):
+) -> None:
     """
     Create a new dog based on the data of the city.
 
