@@ -1,10 +1,16 @@
 from pathlib import Path
+from rich.console import Console
+from rich.layout import Layout
+from rich.panel import Panel
+from rich.progress import Progress
+from rich.table import Table
 from typing import Optional
 
 import typer
 
 import analytics
 
+console = Console()
 app = typer.Typer()
 state = {"year": ""}
 
@@ -17,7 +23,7 @@ def main(
         "-y",
         help="Specify the deadline of the data, default is the current year.",
     ),
-):
+) -> None:
     """
     CLI app for the dog database of the city of Zurich.
     """
@@ -30,15 +36,21 @@ def find(name: str) -> None:
     """
     Find all dogs with the given name and get their birth year and sex.
     """
+    console.print(f"# Searching for dogs with the name: {name} #", style="bold cyan")
+    console.print()
+
     found_dogs = analytics.find_dogs_by_name(name, state["year"])
 
-    print(f"Search for dogs by the name: {name}")
-
-    print("==============")
-
-    print(f"Found dogs:")
+    grid = Table.grid(expand=True)
+    grid.add_column()
+    grid.add_column()
+    grid.add_column()
     for dog in found_dogs:
-        print(f"{dog[0]} {dog[1]} {dog[2]}")
+        grid.add_row(f"[b]{dog[0]}[/b]", f"{dog[1]}", f"[b]{dog[2]}[/b]")
+
+    dog_panel = Panel(grid, title=f"{len(found_dogs)} dogs found with the name: {name}")
+
+    console.print(dog_panel, justify="left")
 
 
 @app.command()
@@ -54,37 +66,93 @@ def stats() -> None:
 
         - the dog count (male / female)
     """
+    if state["year"] is not None:
+        year = f"year {state['year']}"
+    else:
+        year = "current year"
+
+    console.print(f"# Loading statistics for the {year} #", style="bold cyan")
+    console.print()
+
     statistics = analytics.get_analytics(state["year"])
 
-    print("Generate statistics for the current year")
+    shortest_name_grid = Table.grid(expand=True)
+    shortest_name_grid.add_column()
+    for name in statistics.get('shortestNames'):
+        shortest_name_grid.add_row(name)
+    shortest_name_panel = Panel(shortest_name_grid, title="Shortest dog names:")
 
-    print("==============")
+    longest_name_grid = Table.grid(expand=True)
+    longest_name_grid.add_column()
+    for name in statistics.get('longestNames'):
+        longest_name_grid.add_row(name)
+    longest_name_panel = Panel(longest_name_grid, title="Longest dog names:")
 
-    print(f"longest dog name: {statistics['longestNames']}")
-    print(f"shortest dog name: {statistics['shortestNames']}")
+    common_table = Table(title="top 10 most common names", expand=True)
+    common_table.add_column("All")
+    common_table.add_column("Male")
+    common_table.add_column("Female")
 
-    print("--------------")
+    all_names = statistics.get('topTenCommonNames').get('allNames')
+    all_names_m = statistics.get('topTenCommonNames').get('allNamesM')
+    all_names_f = statistics.get('topTenCommonNames').get('allNamesF')
 
-    print("Common names:")
-    print(f"overall: {statistics['topTenCommonNames']['allNames']}")
-    print(f"male: {statistics['topTenCommonNames']['allNamesM']}")
-    print(f"female: {statistics['topTenCommonNames']['allNamesF']}")
+    for i in range(10):
+        common_table.add_row(
+            f"{all_names[i][0]}: {all_names[i][1]}",
+            f"{all_names_m[i][0]}: {all_names_m[i][1]}",
+            f"{all_names_f[i][0]}: {all_names_f[i][1]}"
+        )
 
-    print("--------------")
+    common_name_panel = Panel(common_table)
 
-    print(f"Dog count: {statistics['countOfDogs']['allCount']}")
-    print(f"Males: {statistics['countOfDogs']['mCount']}")
-    print(f"Females: {statistics['countOfDogs']['fCount']}")
+    count_table = Table(title="Male vs Female", expand=True)
+    count_table.add_column("Sex")
+    count_table.add_column("Count")
+    count_table.add_column("Percentage")
+
+    total_count = statistics.get('countOfDogs').get('allCount')
+    male_count = statistics.get('countOfDogs').get('mCount')
+    female_count = statistics.get('countOfDogs').get('fCount')
+
+    count_table.add_row(
+        "Male",
+        f"{statistics['countOfDogs']['mCount']}",
+        f"{round(100 * male_count / total_count)} %",
+    )
+    count_table.add_row(
+        "Female",
+        f"{statistics['countOfDogs']['fCount']}",
+        f"{round(100 * female_count / total_count)} %",
+    )
+    count_table.add_row(
+        "Total",
+        f"{statistics['countOfDogs']['allCount']}",
+        f"100 %",
+    )
+
+    count_panel = Panel(count_table)
+
+    statistics_layout = Layout()
+    statistics_layout.split_row(
+        Layout(shortest_name_panel),
+        Layout(longest_name_panel),
+        Layout(common_name_panel),
+        Layout(count_panel),
+    )
+
+    console.print(f"Stats for the {year}", style="bold", justify="center")
+    console.print(statistics_layout)
 
 
 @app.command()
 def create(
-    output_dir: Optional[str] = typer.Option(
-        Path.cwd(),
-        "--output-dir",
-        "-o",
-        help="Specify the output path for the dog image.",
-    ),
+        output_dir: Optional[str] = typer.Option(
+            Path.cwd(),
+            "--output-dir",
+            "-o",
+            help="Specify the output path for the dog image.",
+        ),
 ) -> None:
     """
     Create a new dog based on the data of the city.
@@ -99,16 +167,22 @@ def create(
     """
     if type(output_dir) == str:
         output_dir = Path(output_dir)
+
+    console.print(f"# Creating new dog #", style="bold cyan")
+    console.print()
+
     new_dog = analytics.create_dog(output_dir, state["year"])
 
-    print("Create new dog:")
+    new_dog_render = [
+        f"Name:       {new_dog.get('dogName')}",
+        f"Birth year: {new_dog.get('dogBirth')}",
+        f"Sex:        {new_dog.get('dogSex')}",
+        f"",
+        f"[b]Find the dog image under the following path:[/b] [magenta]{new_dog.get('dogImg')}[/magenta]",
+    ]
 
-    print("==============")
-
-    print(f"Name: {new_dog['dogName']}")
-    print(f"Birth year: {new_dog['dogBirth']}")
-    print(f"Sex: {new_dog['dogSex']}")
-    print(f"Image Path: {new_dog['dogImg']}")
+    dog_panel_panel = Panel('\n'.join(new_dog_render), title="New Dog")
+    console.print(dog_panel_panel, justify="left")
 
 
 if __name__ == '__main__':
