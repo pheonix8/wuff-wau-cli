@@ -20,7 +20,7 @@ def get_dog_data(year: int) -> DOG_DATA:
     The given year is the deadline of the data, no year given returns the newest data available.
 
             Parameters:
-                year        (str): Deadline of the data. [Default] ""
+                year        (str): Deadline of the data.
 
             Returns:
                 dog_data    (list): Dataset containing Dictionary entries for the dogs.
@@ -35,14 +35,14 @@ def get_dog_data(year: int) -> DOG_DATA:
         sys.exit(1)
     response.encoding = "utf-8-sig"
     split_output = response.text.splitlines()
-    # read csv file
+    # read csv file.
     output_list = list(csv.DictReader(split_output))
-    # set current year if year is ""
+    # set current year if year is None.
     if year is None:
         year = int(output_list[-1].get("StichtagDatJahr"))
-    # extract the data at a specific date
+    # extract the data at a specific date.
     dog_data = list(row for row in output_list if row.get('StichtagDatJahr') == str(year))
-    # check if the given year is in the data
+    # check if the given year is in the data.
     if len(dog_data) == 0:
         years = sorted(set(list(f"{row.get('StichtagDatJahr')}" for row in output_list)))
         error_console.print(Panel('\n'.join(years), title=f"The given year does not exist in the data, try one of the "
@@ -71,7 +71,7 @@ def get_random_dog(output_path: Path, name: str) -> str:
                             f"the developer.")
         sys.exit(1)
     foto_url = response.json().get("url")
-    # check that the url is a JPEG
+    # check that the url is a JPEG.
     while not foto_url.split(".")[-1].endswith(("jpg", "JPG", "jpeg", "JPEG")):
         try:
             response = requests.get(RANDOM_DOG_PICTURE)
@@ -80,10 +80,10 @@ def get_random_dog(output_path: Path, name: str) -> str:
                                 f"the developer.")
             sys.exit(1)
         foto_url = response.json().get("url")
-    # get the extension and create the path
+    # get the extension and create the path.
     ext = foto_url.split(".")[-1]
     output_path = output_path / f"{name}.{ext}"
-    # request the picture and save it into the given path
+    # request the picture and save it into the given path.
     try:
         r = requests.get(foto_url, stream=True)
     except requests.RequestException as e:
