@@ -1,11 +1,12 @@
 import csv
 from pathlib import Path
+from typing import Dict, List
 
 import requests
 
 ZUERICH_DOGS = "https://data.stadt-zuerich.ch/dataset/sid_stapo_hundenamen_od1002/download/KUL100OD1002.csv"
 RANDOM_DOG_PICTURE = "https://random.dog/woof.json"
-DOG_DATA = list[dict[str, str]]
+DOG_DATA = List[Dict[str, str]]
 
 
 def get_dog_data(year: str = "") -> DOG_DATA:
@@ -29,7 +30,7 @@ def get_dog_data(year: str = "") -> DOG_DATA:
     if year == "":
         year = output_list[-1].get("StichtagDatJahr")
     # return the read data at a specific date
-    return [row for row in output_list if row["StichtagDatJahr"] == year]
+    return list(row for row in output_list if row.get('StichtagDatJahr') == year)
 
 
 def get_random_dog(output_path: Path, name: str) -> str:
