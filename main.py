@@ -51,9 +51,9 @@ def find(name: str) -> None:
     grid.add_column()
     grid.add_column()
     for dog in found_dogs:
-        grid.add_row(f"[b]{dog[0]}[/b]", f"{dog[1]}", f"[b]{dog[2]}[/b]")
+        grid.add_row(f"[b cyan]{dog[0]}[/]", f"[b cyan]{dog[1]}[/]", f":{dog[2]}_sign:")
 
-    dog_panel = Panel(grid, title=f"{len(found_dogs)} dogs found with the name: {name}")
+    dog_panel = Panel(grid, title=f"{len(found_dogs)} :dog: found with the name: {name}", style="bold green")
 
     console.print(dog_panel, justify="left")
 
@@ -81,22 +81,22 @@ def stats() -> None:
 
     statistics = analytics.get_analytics(state["year"])
 
-    shortest_name_grid = Table(title="Shortest dog names:", expand=True, show_header=False)
-    shortest_name_grid.add_column()
+    shortest_name_grid = Table(title="Shortest :dog: names", expand=True, show_header=False, style="green")
+    shortest_name_grid.add_column(justify="center")
     for name in statistics.get('shortestNames'):
-        shortest_name_grid.add_row(name)
+        shortest_name_grid.add_row(f"[cyan]- {name}[/cyan]")
     shortest_name_panel = Panel(shortest_name_grid)
 
-    longest_name_grid = Table(title="Longest dog names:", expand=True, show_header=False, )
-    longest_name_grid.add_column()
+    longest_name_grid = Table(title="Longest :dog: names", expand=True, show_header=False, style="green")
+    longest_name_grid.add_column(justify="center")
     for name in statistics.get('longestNames'):
-        longest_name_grid.add_row(name)
+        longest_name_grid.add_row(f"[cyan]- {name}[/cyan]")
     longest_name_panel = Panel(longest_name_grid)
 
-    common_table = Table(title="top 10 most common names", expand=True)
-    common_table.add_column("All")
-    common_table.add_column("Male")
-    common_table.add_column("Female")
+    common_table = Table(title="top 10 most common :dog: names", expand=True, style="green")
+    common_table.add_column("All", style="white")
+    common_table.add_column("Male :male_sign:", style="cyan")
+    common_table.add_column("Female :female_sign:", style="violet")
 
     all_names = statistics.get('topTenCommonNames').get('allNames')
     all_names_m = statistics.get('topTenCommonNames').get('allNamesM')
@@ -111,22 +111,22 @@ def stats() -> None:
 
     common_name_panel = Panel(common_table)
 
-    count_table = Table(title="Male vs Female", expand=True)
-    count_table.add_column("Sex")
-    count_table.add_column("Count")
-    count_table.add_column("Percentage")
+    count_table = Table(title="Male :dog: vs Female :dog:", expand=True, style="green")
+    count_table.add_column("Sex", style="cyan")
+    count_table.add_column("Count", style="cyan")
+    count_table.add_column("Percentage", style="cyan")
 
     total_count = statistics.get('countOfDogs').get('allCount')
     male_count = statistics.get('countOfDogs').get('mCount')
     female_count = statistics.get('countOfDogs').get('fCount')
 
     count_table.add_row(
-        "Male",
+        "Male :male_sign:",
         f"{statistics['countOfDogs']['mCount']}",
         f"{round(100 * male_count / total_count)} %",
     )
     count_table.add_row(
-        "Female",
+        "Female :female_sign:",
         f"{statistics['countOfDogs']['fCount']}",
         f"{round(100 * female_count / total_count)} %",
     )
@@ -146,7 +146,7 @@ def stats() -> None:
         Layout(count_panel),
     )
 
-    console.print(f"Stats for the {year}", style="bold", justify="center")
+    console.print(f"Stats for the {year}", style="green bold", justify="center")
     console.print(statistics_layout)
 
 
@@ -178,7 +178,7 @@ def create(
         sys.exit(0)
 
     if state["year"] is None:
-        error_console.print("Using the data from the current year.", style="bold, red", justify="center")
+        error_console.print("Using the data from the current year.", justify="center")
 
     console.print(f"# Creating new dog #", style="bold cyan")
     console.print()
@@ -186,14 +186,14 @@ def create(
     new_dog = analytics.create_dog(output_dir, state["year"])
 
     new_dog_render = [
-        f"Name:       {new_dog.get('dogName')}",
-        f"Birth year: {new_dog.get('dogBirth')}",
-        f"Sex:        {new_dog.get('dogSex')}",
+        f"[cyan]Name:        [/cyan][white]{new_dog.get('dogName')}[/white]",
+        f"[cyan]Birth year:  [/cyan][white]{new_dog.get('dogBirth')}[/white]",
+        f"[cyan]Sex:         [/cyan][white]{new_dog.get('dogSex')}[/white]",
         f"",
-        f"[b]Find the dog image under the following path:[/b] [magenta]{new_dog.get('dogImg')}[/magenta]",
+        f"[white]Find the dog image under the following path:[/white] [magenta]{new_dog.get('dogImg')}[/magenta]",
     ]
 
-    dog_panel_panel = Panel('\n'.join(new_dog_render), title="New Dog")
+    dog_panel_panel = Panel('\n'.join(new_dog_render), title="New Dog :dog:", style="bold green")
     console.print(dog_panel_panel, justify="left")
 
 

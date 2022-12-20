@@ -116,7 +116,7 @@ def create_dog(output_path: Path, year: int) -> NEW_DOG_DATA:
     dog_name = random.choice(list(dog[0] for dog in all_dogs))
     dog_birth = random.choice(list(dog[1] for dog in all_dogs))
     # get a random dog image downloaded.
-    generated_foto = sticht_images(output_path, f"{dog_name}_{dog_birth}")
+    generated_foto = stitch_images(output_path, f"{dog_name}_{dog_birth}")
 
     new_dog = dict(
         dogName=dog_name,
