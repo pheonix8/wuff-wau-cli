@@ -1,27 +1,28 @@
 from pathlib import Path
+import sys
+
 from rich.console import Console
 from rich.layout import Layout
 from rich.panel import Panel
-from rich.progress import Progress
 from rich.table import Table
 from typing import Optional
-
 import typer
 
 import analytics
 
 console = Console()
+error_console = Console(stderr=True, style="bold red")
 app = typer.Typer()
-state = {"year": ""}
+state = {"year": None}
 
 
 @app.callback()
 def main(
-    year: Optional[str] = typer.Option(
+    year: Optional[int] = typer.Option(
         None,
         "--year",
         "-y",
-        help="Specify the deadline of the data, default is the current year.",
+        help="Specify the deadline of the data, default uses the current year.",
     ),
 ) -> None:
     """
@@ -36,6 +37,10 @@ def find(name: str) -> None:
     """
     Find all dogs with the given name and get their birth year and sex.
     """
+    if state["year"] is None:
+        error_console.print("Using the data from the current year.", justify="center")
+
+    console.print()
     console.print(f"# Searching for dogs with the name: {name} #", style="bold cyan")
     console.print()
 
@@ -76,17 +81,17 @@ def stats() -> None:
 
     statistics = analytics.get_analytics(state["year"])
 
-    shortest_name_grid = Table.grid(expand=True)
+    shortest_name_grid = Table(title="Shortest dog names:", expand=True, show_header=False)
     shortest_name_grid.add_column()
     for name in statistics.get('shortestNames'):
         shortest_name_grid.add_row(name)
-    shortest_name_panel = Panel(shortest_name_grid, title="Shortest dog names:")
+    shortest_name_panel = Panel(shortest_name_grid)
 
-    longest_name_grid = Table.grid(expand=True)
+    longest_name_grid = Table(title="Longest dog names:", expand=True, show_header=False, )
     longest_name_grid.add_column()
     for name in statistics.get('longestNames'):
         longest_name_grid.add_row(name)
-    longest_name_panel = Panel(longest_name_grid, title="Longest dog names:")
+    longest_name_panel = Panel(longest_name_grid)
 
     common_table = Table(title="top 10 most common names", expand=True)
     common_table.add_column("All")
@@ -167,6 +172,13 @@ def create(
     """
     if type(output_dir) == str:
         output_dir = Path(output_dir)
+
+    if not output_dir.exists():
+        error_console.print("This path does not exist set another path.")
+        sys.exit(0)
+
+    if state["year"] is None:
+        error_console.print("Using the data from the current year.", style="bold, red", justify="center")
 
     console.print(f"# Creating new dog #", style="bold cyan")
     console.print()

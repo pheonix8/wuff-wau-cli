@@ -1,7 +1,10 @@
 import collections
 from pathlib import Path
 import random
+import sys
 from typing import Dict, List, Tuple, Union
+
+from rich.console import Console
 
 import data
 
@@ -14,9 +17,10 @@ ANALYTICS_DATA = dict[
     ]
 ]
 NEW_DOG_DATA = dict[str, str]
+error_console = Console(stderr=True, style="bold red")
 
 
-def find_dogs_by_name(name: str, year: str = "") -> DOG_DATA:
+def find_dogs_by_name(name: str, year: int) -> DOG_DATA:
     """
     Filter a dog list to only contain the dogs with a specific name
 
@@ -31,11 +35,15 @@ def find_dogs_by_name(name: str, year: str = "") -> DOG_DATA:
     all_dogs = covert_dog_dataset(data.get_dog_data(year))
     # filter the list  for the given name
     filtered_dogs = list(dog for dog in all_dogs if dog[0] == name)
+    # check if a dog was found with the given name
+    if len(filtered_dogs) == 0:
+        error_console.print(f"The dog {name} was not found in the data.")
+        sys.exit(0)
 
     return filtered_dogs
 
 
-def get_analytics(year: str = "") -> ANALYTICS_DATA:
+def get_analytics(year: int) -> ANALYTICS_DATA:
     """
     Analyses a dog list and finds:
 
@@ -84,7 +92,7 @@ def get_analytics(year: str = "") -> ANALYTICS_DATA:
     return analytics
 
 
-def create_dog(output_path: Path, year: str = "") -> NEW_DOG_DATA:
+def create_dog(output_path: Path, year: int) -> NEW_DOG_DATA:
     """
     Creates a new dog based on a dog list
 
