@@ -2,7 +2,6 @@ from pathlib import Path
 import sys
 
 from rich.console import Console
-from rich.layout import Layout
 from rich.panel import Panel
 from rich.table import Table
 from typing import Optional
@@ -85,13 +84,13 @@ def stats() -> None:
     shortest_name_grid.add_column(justify="center")
     for name in statistics.get('shortestNames'):
         shortest_name_grid.add_row(f"[cyan]- {name}[/cyan]")
-    shortest_name_panel = Panel(shortest_name_grid)
+    shortest_name_panel = Panel(shortest_name_grid, style="white")
 
     longest_name_grid = Table(title="Longest :dog: names", expand=True, show_header=False, style="green")
     longest_name_grid.add_column(justify="center")
     for name in statistics.get('longestNames'):
         longest_name_grid.add_row(f"[cyan]- {name}[/cyan]")
-    longest_name_panel = Panel(longest_name_grid)
+    longest_name_panel = Panel(longest_name_grid, style="white")
 
     common_table = Table(title="top 10 most common :dog: names", expand=True, style="green")
     common_table.add_column("All", style="white")
@@ -109,7 +108,7 @@ def stats() -> None:
             f"{all_names_f[i][0]}: {all_names_f[i][1]}"
         )
 
-    common_name_panel = Panel(common_table)
+    common_name_panel = Panel(common_table, style="white")
 
     count_table = Table(title="Male :dog: vs Female :dog:", expand=True, style="green")
     count_table.add_column("Sex", style="cyan")
@@ -136,18 +135,18 @@ def stats() -> None:
         f"100 %",
     )
 
-    count_panel = Panel(count_table)
+    count_panel = Panel(count_table, style="white")
 
-    statistics_layout = Layout()
-    statistics_layout.split_row(
-        Layout(shortest_name_panel),
-        Layout(longest_name_panel),
-        Layout(common_name_panel),
-        Layout(count_panel),
-    )
+    statistics_grid = Table.grid(expand=True)
+    statistics_grid.add_column()
+    statistics_grid.add_column()
+    statistics_grid.add_column()
+    statistics_grid.add_column()
+    statistics_grid.add_row(shortest_name_panel, longest_name_panel, common_name_panel, count_panel)
 
-    console.print(f"Stats for the {year}", style="green bold", justify="center")
-    console.print(statistics_layout)
+    statistics_panel = Panel(statistics_grid, title=f"Stats for the {year}", style="green bold")
+
+    console.print(statistics_panel)
 
 
 @app.command()
