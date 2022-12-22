@@ -27,7 +27,7 @@ def find_dogs_by_name(name: str, year: int | None) -> list[tuple[str, str, str]]
                 filtered_dogs   (list): Filtered dogs (name,birthYear,sex)
     """
     # get a dog list.
-    all_dogs = covert_dog_dataset(data.get_dog_data(year))
+    all_dogs = convert_dog_dataset(data.get_dog_data(year))
     # filter the list  for the given name.
     filtered_dogs = list(dog for dog in all_dogs if dog[0] == name)
     # check if a dog was found with the given name.
@@ -54,7 +54,7 @@ def get_analytics(year: int | None) -> dict[str, list[str] | dict[str, list[tupl
                 analytics   (dict): The newly created statistics.
     """
     # get a dog list.
-    all_dogs = covert_dog_dataset(data.get_dog_data(year))
+    all_dogs = convert_dog_dataset(data.get_dog_data(year))
     # filter out the names into lists.
     all_names = list(dog[0] for dog in all_dogs)
     m_names = list(dog[0] for dog in all_dogs if dog[2] == "male")
@@ -104,7 +104,7 @@ def create_dog(output_path: Path, year: int | None) -> dict[str, str]:
                 new_dog   (dict): The newly created Dog.
     """
     # get a dog list.
-    all_dogs = covert_dog_dataset(data.get_dog_data(year))
+    all_dogs = convert_dog_dataset(data.get_dog_data(year))
     # filter out the necessary info and get a random item.
     dog_name = random.choice(list(dog[0] for dog in all_dogs))
     dog_birth = random.choice(list(dog[1] for dog in all_dogs))
@@ -121,9 +121,9 @@ def create_dog(output_path: Path, year: int | None) -> dict[str, str]:
     return new_dog
 
 
-def covert_dog_dataset(dog_data: list[dict[str, str]]) -> list[tuple[str, str, str]]:
+def convert_dog_dataset(dog_data: list[dict[str, str]]) -> list[tuple[str, str, str]]:
     """
-    Filter a dog list to only contain the dogs with a specific name.
+    Convert the dog dataset to a list of tuples.
 
             Parameters:
                 dog_data    (list): List of dictionaries, {HundenameText,GebDatHundJahr,SexHundSort,AnzHunde}
