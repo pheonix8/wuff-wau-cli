@@ -66,6 +66,7 @@ def get_random_dog(output_path: Path, name: str) -> str:
     # request a picture url
     try:
         response = requests.get(RANDOM_DOG_PICTURE)
+        response.raise_for_status()
     except requests.RequestException as e:
         error_console.print(f"The request threw a:\n{e}\nPlease check your internet, or contact "
                             f"the developer.")
@@ -75,6 +76,7 @@ def get_random_dog(output_path: Path, name: str) -> str:
     while not foto_url.split(".")[-1].endswith(("jpg", "JPG", "jpeg", "JPEG")):
         try:
             response = requests.get(RANDOM_DOG_PICTURE)
+            response.raise_for_status()
         except requests.RequestException as e:
             error_console.print(f"The request threw a:\n{e}\nPlease check your internet, or contact "
                                 f"the developer.")
@@ -86,6 +88,7 @@ def get_random_dog(output_path: Path, name: str) -> str:
     # request the picture and save it into the given path.
     try:
         r = requests.get(foto_url, stream=True)
+        response.raise_for_status()
     except requests.RequestException as e:
         error_console.print(f"The request threw a:\n{e}\nPlease check your internet, or contact "
                             f"the developer.")
