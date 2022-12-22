@@ -1,28 +1,21 @@
+from __future__ import annotations
+
 import collections
 import shutil
 from pathlib import Path
 import random
 import sys
-from typing import Dict, List, Tuple, Union
+from typing import Any
 
 from PIL import Image
 from rich.console import Console
 
 import data
 
-DOG_DATA = List[Tuple[str, str, str]]
-ANALYTICS_DATA = dict[
-    str, Union[
-        List[str],
-        Dict[str, list[str]],
-        Dict[str, int],
-    ]
-]
-NEW_DOG_DATA = dict[str, str]
 error_console = Console(stderr=True, style="bold red")
 
 
-def find_dogs_by_name(name: str, year: int) -> DOG_DATA:
+def find_dogs_by_name(name: str, year: int | None) -> list[tuple[str, str, str]]:
     """
     Filter a dog list to only contain the dogs with a specific name.
 
@@ -45,7 +38,7 @@ def find_dogs_by_name(name: str, year: int) -> DOG_DATA:
     return filtered_dogs
 
 
-def get_analytics(year: int) -> ANALYTICS_DATA:
+def get_analytics(year: int | None) -> dict[str, list[str] | dict[str, list[tuple[str, int]]] | dict[str, int]]:
     """
     Analyses a dog list and finds:
 
@@ -69,7 +62,7 @@ def get_analytics(year: int) -> ANALYTICS_DATA:
     # Get the longest / shortest names.
     max_length = max(list(len(dog) for dog in all_names))
     min_length = min(list(len(dog) for dog in all_names if dog != "?"))
-
+    # create the analytics dictionary.
     analytics = dict(
         longestNames=list(
             dog[0] for dog in all_dogs if len(dog[0]) == max_length
@@ -94,7 +87,7 @@ def get_analytics(year: int) -> ANALYTICS_DATA:
     return analytics
 
 
-def create_dog(output_path: Path, year: int) -> NEW_DOG_DATA:
+def create_dog(output_path: Path, year: int | None) -> dict[str, str]:
     """
     Creates a new dog based on a dog list.
 
@@ -117,7 +110,7 @@ def create_dog(output_path: Path, year: int) -> NEW_DOG_DATA:
     dog_birth = random.choice(list(dog[1] for dog in all_dogs))
     # get a random dog image downloaded.
     generated_foto = stitch_images(output_path, f"{dog_name}_{dog_birth}")
-
+    # create a dog dictionary.
     new_dog = dict(
         dogName=dog_name,
         dogBirth=dog_birth,
@@ -128,7 +121,7 @@ def create_dog(output_path: Path, year: int) -> NEW_DOG_DATA:
     return new_dog
 
 
-def covert_dog_dataset(dog_data: data.DOG_DATA) -> DOG_DATA:
+def covert_dog_dataset(dog_data: list[dict[str, str]]) -> list[tuple[str, str, str]]:
     """
     Filter a dog list to only contain the dogs with a specific name.
 

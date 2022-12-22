@@ -1,8 +1,8 @@
+from __future__ import annotations
+
 import csv
 from pathlib import Path
 import sys
-from typing import Dict, List
-
 
 import requests
 from rich.console import Console
@@ -10,11 +10,10 @@ from rich.panel import Panel
 
 ZUERICH_DOGS = "https://data.stadt-zuerich.ch/dataset/sid_stapo_hundenamen_od1002/download/KUL100OD1002.csv"
 RANDOM_DOG_PICTURE = "https://random.dog/woof.json"
-DOG_DATA = List[Dict[str, str]]
 error_console = Console(stderr=True, style="bold red")
 
 
-def get_dog_data(year: int) -> DOG_DATA:
+def get_dog_data(year: int | None) -> list[dict[str, str]]:
     """
     Gets a dataset of the Zurich police department with all registered dogs in the city of Zurich.
     The given year is the deadline of the data, no year given returns the newest data available.

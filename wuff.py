@@ -4,7 +4,6 @@ import sys
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
-from typing import Optional
 import typer
 
 import analytics
@@ -12,12 +11,12 @@ import analytics
 console = Console()
 error_console = Console(stderr=True, style="bold red")
 app = typer.Typer()
-state = {"year": None}
+state: dict[str, int | None] = {"year": None}
 
 
 @app.callback()
 def main(
-    year: Optional[int] = typer.Option(
+    year: int | None = typer.Option(
         None,
         "--year",
         "-y",
@@ -151,7 +150,7 @@ def stats() -> None:
 
 @app.command()
 def create(
-        output_dir: Optional[str] = typer.Option(
+        output_dir: str | Path | None = typer.Option(
             Path.cwd(),
             "--output-dir",
             "-o",
