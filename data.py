@@ -29,8 +29,10 @@ def get_dog_data(year: int | None) -> list[dict[str, str]]:
         response = requests.get(ZUERICH_DOGS)
         response.raise_for_status()
     except requests.RequestException as e:
-        error_console.print(f"The request threw a:\n{e}\nPlease check your internet, or contact "
-                            f"the developer.")
+        error_console.print(
+            f"The request threw a:\n{e}\nPlease check your internet, or contact "
+            f"the developer."
+        )
         sys.exit(1)
     response.encoding = "utf-8-sig"
     split_output = response.text.splitlines()
@@ -40,12 +42,21 @@ def get_dog_data(year: int | None) -> list[dict[str, str]]:
     if year is None:
         year = int(output_list[-1].get("StichtagDatJahr"))
     # extract the data at a specific date.
-    dog_data = list(row for row in output_list if row.get('StichtagDatJahr') == str(year))
+    dog_data = list(
+        row for row in output_list if row.get("StichtagDatJahr") == str(year)
+    )
     # check if the given year is in the data.
     if len(dog_data) == 0:
-        years = sorted(set(list(f"{row.get('StichtagDatJahr')}" for row in output_list)))
-        error_console.print(Panel('\n'.join(years), title=f"The given year does not exist in the data, try one of the "
-                                                          f"following years:"))
+        years = sorted(
+            set(list(f"{row.get('StichtagDatJahr')}" for row in output_list))
+        )
+        error_console.print(
+            Panel(
+                "\n".join(years),
+                title=f"The given year does not exist in the data, try one of the "
+                f"following years:",
+            )
+        )
         sys.exit(0)
     else:
         return dog_data
@@ -67,8 +78,10 @@ def get_random_dog(output_path: Path, name: str) -> str:
         response = requests.get(RANDOM_DOG_PICTURE)
         response.raise_for_status()
     except requests.RequestException as e:
-        error_console.print(f"The request threw a:\n{e}\nPlease check your internet, or contact "
-                            f"the developer.")
+        error_console.print(
+            f"The request threw a:\n{e}\nPlease check your internet, or contact "
+            f"the developer."
+        )
         sys.exit(1)
     foto_url = response.json().get("url")
     # check that the url is a JPEG.
@@ -77,8 +90,10 @@ def get_random_dog(output_path: Path, name: str) -> str:
             response = requests.get(RANDOM_DOG_PICTURE)
             response.raise_for_status()
         except requests.RequestException as e:
-            error_console.print(f"The request threw a:\n{e}\nPlease check your internet, or contact "
-                                f"the developer.")
+            error_console.print(
+                f"The request threw a:\n{e}\nPlease check your internet, or contact "
+                f"the developer."
+            )
             sys.exit(1)
         foto_url = response.json().get("url")
     # get the extension and create the path.
@@ -89,11 +104,13 @@ def get_random_dog(output_path: Path, name: str) -> str:
         r = requests.get(foto_url, stream=True)
         response.raise_for_status()
     except requests.RequestException as e:
-        error_console.print(f"The request threw a:\n{e}\nPlease check your internet, or contact "
-                            f"the developer.")
+        error_console.print(
+            f"The request threw a:\n{e}\nPlease check your internet, or contact "
+            f"the developer."
+        )
         sys.exit(1)
     if r.status_code == 200:
-        with open(output_path, 'wb') as f:
+        with open(output_path, "wb") as f:
             for chunk in r.iter_content(1024):
                 f.write(chunk)
 

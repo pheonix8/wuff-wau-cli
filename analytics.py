@@ -38,7 +38,9 @@ def find_dogs_by_name(name: str, year: int | None) -> list[tuple[str, str, str]]
     return filtered_dogs
 
 
-def get_analytics(year: int | None) -> dict[str, list[str] | dict[str, list[tuple[str, int]]] | dict[str, int]]:
+def get_analytics(
+    year: int | None,
+) -> dict[str, list[str] | dict[str, list[tuple[str, int]]] | dict[str, int]]:
     """
     Analyses a dog list and finds:
 
@@ -64,12 +66,8 @@ def get_analytics(year: int | None) -> dict[str, list[str] | dict[str, list[tupl
     min_length = min(list(len(dog) for dog in all_names if dog != "?"))
     # create the analytics dictionary.
     analytics = dict(
-        longestNames=list(
-            dog[0] for dog in all_dogs if len(dog[0]) == max_length
-        ),
-        shortestNames=list(
-            dog[0] for dog in all_dogs if len(dog[0]) == min_length
-        ),
+        longestNames=list(dog[0] for dog in all_dogs if len(dog[0]) == max_length),
+        shortestNames=list(dog[0] for dog in all_dogs if len(dog[0]) == min_length),
         topTenCommonNames=dict(
             allNames=collections.Counter(all_names).most_common(10),
             allNamesM=collections.Counter(m_names).most_common(10),
@@ -79,9 +77,7 @@ def get_analytics(year: int | None) -> dict[str, list[str] | dict[str, list[tupl
             allCount=len(all_names),
             mCount=len(m_names),
             fCount=len(f_names),
-
         ),
-
     )
 
     return analytics
@@ -115,7 +111,7 @@ def create_dog(output_path: Path, year: int | None) -> dict[str, str]:
         dogName=dog_name,
         dogBirth=dog_birth,
         dogSex=random.choice(["m", "f"]),
-        dogImg=generated_foto
+        dogImg=generated_foto,
     )
 
     return new_dog
@@ -135,18 +131,14 @@ def convert_dog_dataset(dog_data: list[dict[str, str]]) -> list[tuple[str, str, 
     # loop through the dog data and only save the important values into a tuple.
     for dog in dog_data:
         # convert the Sex value into a useful character.
-        if dog.get('SexHundSort') == '1':
-            sex = 'male'
-        elif dog.get('SexHundSort') == '2':
-            sex = 'female'
+        if dog.get("SexHundSort") == "1":
+            sex = "male"
+        elif dog.get("SexHundSort") == "2":
+            sex = "female"
         else:
             sex = "?"
-        for i in range(int(dog.get('AnzHunde'))):
-            all_dogs.append((
-                dog.get('HundenameText'),
-                dog.get('GebDatHundJahr'),
-                sex
-            ))
+        for i in range(int(dog.get("AnzHunde"))):
+            all_dogs.append((dog.get("HundenameText"), dog.get("GebDatHundJahr"), sex))
 
     return all_dogs
 
@@ -172,9 +164,13 @@ def stitch_images(output_path: Path, name: str) -> str:
     temp_img_2 = Image.open(temp_img_2_path)
     # get the combined width and maximal height of the images.
     new_width = temp_img_1.size[0] + temp_img_2.size[0]
-    new_height = temp_img_1.size[1] if temp_img_1.size[1] >= temp_img_2.size[1] else temp_img_2.size[1]
+    new_height = (
+        temp_img_1.size[1]
+        if temp_img_1.size[1] >= temp_img_2.size[1]
+        else temp_img_2.size[1]
+    )
     # creat a new image.
-    new_dog_image = Image.new('RGB', (new_width, new_height), "white")
+    new_dog_image = Image.new("RGB", (new_width, new_height), "white")
     # paste the dog images into the new image and save it.
     new_dog_image.paste(temp_img_1, (0, 0))
     new_dog_image.paste(temp_img_2, (temp_img_1.size[0], 0))

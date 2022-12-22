@@ -54,7 +54,11 @@ def find(name: str) -> None:
     for dog in found_dogs:
         grid.add_row(f"[b cyan]{dog[0]}[/]", f"[b cyan]{dog[1]}[/]", f":{dog[2]}_sign:")
 
-    dog_panel = Panel(grid, title=f"{len(found_dogs)} :dog: found with the name: {name}", style="bold green")
+    dog_panel = Panel(
+        grid,
+        title=f"{len(found_dogs)} :dog: found with the name: {name}",
+        style="bold green",
+    )
 
     console.print(dog_panel, justify="left")
 
@@ -82,32 +86,38 @@ def stats() -> None:
 
     statistics = analytics.get_analytics(state["year"])
 
-    shortest_name_grid = Table(title="Shortest :dog: names", expand=True, show_header=False, style="green")
+    shortest_name_grid = Table(
+        title="Shortest :dog: names", expand=True, show_header=False, style="green"
+    )
     shortest_name_grid.add_column(justify="center")
-    for name in statistics.get('shortestNames'):
+    for name in statistics.get("shortestNames"):
         shortest_name_grid.add_row(f"[cyan]- {name}[/cyan]")
     shortest_name_panel = Panel(shortest_name_grid, style="white")
 
-    longest_name_grid = Table(title="Longest :dog: names", expand=True, show_header=False, style="green")
+    longest_name_grid = Table(
+        title="Longest :dog: names", expand=True, show_header=False, style="green"
+    )
     longest_name_grid.add_column(justify="center")
-    for name in statistics.get('longestNames'):
+    for name in statistics.get("longestNames"):
         longest_name_grid.add_row(f"[cyan]- {name}[/cyan]")
     longest_name_panel = Panel(longest_name_grid, style="white")
 
-    common_table = Table(title="top 10 most common :dog: names", expand=True, style="green")
+    common_table = Table(
+        title="top 10 most common :dog: names", expand=True, style="green"
+    )
     common_table.add_column("All", style="white")
     common_table.add_column("Male :male_sign:", style="cyan")
     common_table.add_column("Female :female_sign:", style="violet")
 
-    all_names = statistics.get('topTenCommonNames').get('allNames')
-    all_names_m = statistics.get('topTenCommonNames').get('allNamesM')
-    all_names_f = statistics.get('topTenCommonNames').get('allNamesF')
+    all_names = statistics.get("topTenCommonNames").get("allNames")
+    all_names_m = statistics.get("topTenCommonNames").get("allNamesM")
+    all_names_f = statistics.get("topTenCommonNames").get("allNamesF")
 
     for i in range(10):
         common_table.add_row(
             f"{all_names[i][0]}: {all_names[i][1]}",
             f"{all_names_m[i][0]}: {all_names_m[i][1]}",
-            f"{all_names_f[i][0]}: {all_names_f[i][1]}"
+            f"{all_names_f[i][0]}: {all_names_f[i][1]}",
         )
 
     common_name_panel = Panel(common_table, style="white")
@@ -117,9 +127,9 @@ def stats() -> None:
     count_table.add_column("Count", style="cyan")
     count_table.add_column("Percentage", style="cyan")
 
-    total_count = statistics.get('countOfDogs').get('allCount')
-    male_count = statistics.get('countOfDogs').get('mCount')
-    female_count = statistics.get('countOfDogs').get('fCount')
+    total_count = statistics.get("countOfDogs").get("allCount")
+    male_count = statistics.get("countOfDogs").get("mCount")
+    female_count = statistics.get("countOfDogs").get("fCount")
 
     count_table.add_row(
         "Male :male_sign:",
@@ -144,21 +154,25 @@ def stats() -> None:
     statistics_grid.add_column()
     statistics_grid.add_column()
     statistics_grid.add_column()
-    statistics_grid.add_row(shortest_name_panel, longest_name_panel, common_name_panel, count_panel)
+    statistics_grid.add_row(
+        shortest_name_panel, longest_name_panel, common_name_panel, count_panel
+    )
 
-    statistics_panel = Panel(statistics_grid, title=f"Stats for the {year}", style="green bold")
+    statistics_panel = Panel(
+        statistics_grid, title=f"Stats for the {year}", style="green bold"
+    )
 
     console.print(statistics_panel)
 
 
 @app.command()
 def create(
-        output_dir: Optional[str] = typer.Option(
-            Path.cwd(),
-            "--output-dir",
-            "-o",
-            help="Specify the output path for the dog image.",
-        ),
+    output_dir: Optional[str] = typer.Option(
+        Path.cwd(),
+        "--output-dir",
+        "-o",
+        help="Specify the output path for the dog image.",
+    ),
 ) -> None:
     """
     Create a new dog based on the data of the city.
@@ -194,9 +208,11 @@ def create(
         f"[white]Find the dog image under the following path:[/white] [magenta]{new_dog.get('dogImg')}[/magenta]",
     ]
 
-    dog_panel_panel = Panel('\n'.join(new_dog_render), title="New Dog :dog:", style="bold green")
+    dog_panel_panel = Panel(
+        "\n".join(new_dog_render), title="New Dog :dog:", style="bold green"
+    )
     console.print(dog_panel_panel, justify="left")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app()
