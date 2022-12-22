@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from pathlib import Path
 import sys
+from typing import Optional
 
 from rich.console import Console
 from rich.panel import Panel
@@ -16,7 +19,7 @@ state: dict[str, int | None] = {"year": None}
 
 @app.callback()
 def main(
-    year: int | None = typer.Option(
+    year: Optional[int] = typer.Option(
         None,
         "--year",
         "-y",
@@ -150,7 +153,7 @@ def stats() -> None:
 
 @app.command()
 def create(
-        output_dir: str | Path | None = typer.Option(
+        output_dir: Optional[str] = typer.Option(
             Path.cwd(),
             "--output-dir",
             "-o",
