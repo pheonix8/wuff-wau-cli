@@ -19,12 +19,12 @@ state: dict[str, int | None] = {"year": None}
 
 @app.callback()
 def main(
-    year: Optional[int] = typer.Option(
-        None,
-        "--year",
-        "-y",
-        help="Specify the deadline of the data, default uses the current year.",
-    ),
+        year: Optional[int] = typer.Option(
+            None,
+            "--year",
+            "-y",
+            help="Specify the deadline of the data, default uses the current year.",
+        ),
 ) -> None:
     """
     CLI app for the dog database of the city of Zurich.
@@ -167,12 +167,12 @@ def stats() -> None:
 
 @app.command()
 def create(
-    output_dir: Optional[str] = typer.Option(
-        Path.cwd(),
-        "--output-dir",
-        "-o",
-        help="Specify the output path for the dog image.",
-    ),
+        output_dir: Optional[str] = typer.Option(
+            Path.cwd(),
+            "--output-dir",
+            "-o",
+            help="Specify the output path for the dog image.",
+        ),
 ) -> None:
     """
     Create a new dog based on the data of the city.
@@ -185,7 +185,7 @@ def create(
 
         - Random picture from: 'https://random.dog'
     """
-    if type(output_dir) == str:
+    if type(output_dir) is str:
         output_dir = Path(output_dir)
 
     if not output_dir.exists():
